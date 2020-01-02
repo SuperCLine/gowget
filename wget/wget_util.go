@@ -3,6 +3,7 @@ package wget
 import (
 	"fmt"
 	"os"
+	"path"
 	"strconv"
 	"strings"
 )
@@ -144,3 +145,42 @@ func createDirectory2(filePath string) error {
 	return createDirectory(filePath[:pos])
 }
 
+func getFileName(filePath string) string  {
+
+	pos := strings.LastIndex(filePath, "/")
+	return filePath[pos+1:]
+}
+
+func getWritePath(outPath, url string, isdir bool) (dir, file string) {
+
+	pos := indexUrl(url, 2)
+	dir = path.Join(outPath, url[pos:])
+	if isdir {
+
+		pos = strings.LastIndex(dir, "/")
+		lenPath := len(dir)
+		npos := lenPath
+		if pos == lenPath - 1 {
+			pos = strings.LastIndex(dir[:lenPath-1], "/")
+			npos = lenPath - 1
+		}
+
+		file = path.Join(dir, dir[pos:npos])
+		file += ".html"
+	} else {
+		file = dir
+		dir = ""
+	}
+	return
+}
+
+func clamp(v, min, max int) int {
+
+	if v <= min {
+		return min
+	} else if v >= max {
+		return max
+	} else {
+		return v
+	}
+}

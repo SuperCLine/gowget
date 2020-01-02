@@ -36,8 +36,8 @@ func (gg *gowget) Run(args []string) {
 
 	if gg.parseArgs(args) {
 
-		gg.instHref.handleInterest()
-		gg.instHref.verbose(gg.flagVerbose)
+		gg.instHref.HandleInterest()
+		gg.instHref.Verbose(gg.flagVerbose)
 	}
 }
 

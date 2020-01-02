@@ -23,7 +23,7 @@ func newAoiHref(gg *gowget) *aoiHref {
 	return aoi
 }
 
-func (ah *aoiHref) getInterest(data string) (result []string) {
+func (ah *aoiHref) GetInterest(data string) (result []string) {
 
 	hrefAll := ah.regHref.FindAllStringSubmatch(data, -1)
 	num := len(hrefAll)
@@ -65,15 +65,15 @@ func (ah *aoiHref) getInterest(data string) (result []string) {
 	return
 }
 
-func (ah *aoiHref) handleInterest()  {
+func (ah *aoiHref) HandleInterest()  {
 
-	ah.dl.parseDownloadInfo()
-	ah.dl.download()
+	ah.dl.ParseDownLoad()
+	ah.dl.HandleDownLoad()
 }
 
-func (ah *aoiHref) verbose(vb bool)  {
+func (ah *aoiHref) Verbose(vb bool)  {
 
-	ah.dl.verbose(vb)
+	ah.dl.Verbose(vb)
 }
 
 func (ah *aoiHref) getUrl(hrefUrl string) string {
