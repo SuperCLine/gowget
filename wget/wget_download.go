@@ -144,22 +144,29 @@ func (dl *download) parseHead(url string, recursive bool)  {
 			}
 		}
 	} else {
-		
-		if dl.isRedirectGet(headResp.StatusCode) {
 
-			fileResp, err := dl.httpRequest(http.MethodGet, url)
-			if err != nil {
-				return
-			}
-			defer fileResp.Body.Close()
-
-			cType = fileResp.Header.Get("Content-Type")
-
-			dl.addDownloadFile(fileResp, url, cType)
-		} else {
+		if headResp.StatusCode == 200 {
 
 			dl.addDownloadFile(headResp, url, cType)
+		} else {
+
+			if dl.isRedirectGet(headResp.Request.Response.StatusCode) {
+
+				fileResp, err := dl.httpRequest(http.MethodGet, url)
+				if err != nil {
+					return
+				}
+				defer fileResp.Body.Close()
+
+				cType = fileResp.Header.Get("Content-Type")
+
+				dl.addDownloadFile(fileResp, url, cType)
+			} else {
+
+				gLog.logErr("\nfailed to get file data.[code:%d, url:%s]", headResp.StatusCode, url)
+			}
 		}
+
 	}
 
 	dl.stats.SetParseStats()
