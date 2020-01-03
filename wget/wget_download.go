@@ -150,7 +150,7 @@ func (dl *download) parseHead(url string, recursive bool)  {
 			dl.addDownloadFile(headResp, url, cType)
 		} else {
 
-			if dl.isRedirectGet(headResp.Request.Response.StatusCode) {
+			if headResp.Request != nil && headResp.Request.Response != nil && dl.isRedirectGet(headResp.Request.Response.StatusCode) {
 
 				fileResp, err := dl.httpRequest(http.MethodGet, url)
 				if err != nil {
