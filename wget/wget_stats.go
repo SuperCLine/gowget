@@ -8,6 +8,7 @@ import (
 type downloadStats struct {
 
 	templateStats string
+	parseNum int
 }
 
 func newDownloadStats() *downloadStats {
@@ -16,10 +17,20 @@ func newDownloadStats() *downloadStats {
 		//percent [===>      ] size speed time
 		// 5% [===>   ] 1,235 19.8k/s 01m 21s
 		templateStats:"\r%s\t[%s]\t%sBytes\t%0.2fKB/s\t%s\t[%s]",
+		parseNum:0,
 	}
 }
 
-func (s *downloadStats) SetStats(fileName string, size, totalSize int64, t int64)  {
+func (s *downloadStats) SetParseStats()  {
+
+	s.parseNum++
+	equals := s.parseNum % 50
+	spaces := 50 - equals
+
+	gLog.logInfo("\r%d\t[%s]", s.parseNum, strings.Repeat("=", equals) + ">" + strings.Repeat(" ", spaces))
+}
+
+func (s *downloadStats) SetDownloadStats(fileName string, size, totalSize int64, t int64)  {
 
 	percent := size * 100 / totalSize
 	strPercent := fmt.Sprintf("%d", percent)

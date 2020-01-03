@@ -34,7 +34,9 @@ func newDownload(gg *gowget, aoi aoi) *download {
 
 func (dl *download) ParseDownLoad()  {
 
+	gLog.logInfo("\rBegin parsing, pls waiting ...")
 	dl.parseHead(dl.gg.url, true)
+	gLog.logInfo("\rEnd parsing.")
 }
 
 func (dl *download) HandleDownLoad() {
@@ -61,6 +63,8 @@ func (dl *download) Verbose(vb bool)  {
 
 	if dl.gg.flagVerbose {
 
+		succeedNum := 0
+		failedNum := 0
 		for i:=0; i<len(dl.dlList); i++ {
 
 			downFile := dl.dlList[i]
@@ -68,6 +72,9 @@ func (dl *download) Verbose(vb bool)  {
 			strErr := "nil"
 			if downFile.mErr != nil {
 				strErr = downFile.mErr.Error()
+				failedNum++
+			} else {
+				succeedNum++
 			}
 
 			gLog.logInfo("\ndownload:%s, error:%s, time:%s",
@@ -77,6 +84,8 @@ func (dl *download) Verbose(vb bool)  {
 
 			// TO DO: save range to json file for resume from break point
 		}
+
+		gLog.logInfo("\nSucceed:%d, Failed:%d", succeedNum, failedNum)
 	}
 }
 
@@ -116,20 +125,23 @@ func (dl *download) parseHead(url string, recursive bool)  {
 	defer headResp.Body.Close()
 
 	cType := headResp.Header.Get("Content-Type")
-	if recursive && strings.Contains(cType, "html") {
+	if strings.Contains(cType, "html") {
 
-		htmlResp, err := dl.httpRequest(http.MethodGet, url)
-		if err != nil {
-			return
-		}
-		defer htmlResp.Body.Close()
+		if recursive {
 
-		body, err := ioutil.ReadAll(htmlResp.Body)
-		if err != nil {
-			gLog.logErr("failed to read html.[err:%s, url:%s]", err.Error(), url)
-		} else {
-			dl.writeHtml(url, string(body))
-			dl.parseHtml(string(body), dl.gg.flagRecursive)
+			htmlResp, err := dl.httpRequest(http.MethodGet, url)
+			if err != nil {
+				return
+			}
+			defer htmlResp.Body.Close()
+
+			body, err := ioutil.ReadAll(htmlResp.Body)
+			if err != nil {
+				gLog.logErr("failed to read html.[err:%s, url:%s]", err.Error(), url)
+			} else {
+				dl.writeHtml(url, string(body))
+				dl.parseHtml(string(body), dl.gg.flagRecursive)
+			}
 		}
 	} else {
 		
@@ -149,6 +161,8 @@ func (dl *download) parseHead(url string, recursive bool)  {
 			dl.addDownloadFile(headResp, url, cType)
 		}
 	}
+
+	dl.stats.SetParseStats()
 }
 
 func (dl *download) addDownloadFile(resp *http.Response, url, cType string)  {

@@ -82,7 +82,7 @@ func (dr *downloadRange) HandleDownLoad(info *downloadFile, file *os.File, fileL
 		atomic.AddInt64(&info.mSize, n)
 
 		totalTime := time.Now().UnixNano() - info.mTimeBegin
-		info.stats.SetStats(info.mFileName, info.mSize, info.mContentLength, totalTime)
+		info.stats.SetDownloadStats(info.mFileName, info.mSize, info.mContentLength, totalTime)
 
 		if downSize == dr.mEnd-dr.mStart+1 {
 			return nil
