@@ -50,7 +50,7 @@ func (dr *downloadRange) HandleDownLoad(info *downloadFile, file *os.File, fileL
 	}
 	defer resp.Body.Close()
 
-	if resp.StatusCode != http.StatusOK || resp.StatusCode != http.StatusPartialContent {
+	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusPartialContent {
 		return errors.New("Bad download range request.")
 	}
 
