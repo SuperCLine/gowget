@@ -3,6 +3,7 @@ package wget
 import (
 	"flag"
 	"os"
+	"strings"
 )
 
 const (
@@ -18,6 +19,9 @@ type gowget struct {
 	flagForeignUrl bool
 	flagParentUrl bool
 	flagOutpath string
+
+	flagInclude []string
+	flagExclude []string
 
 	url string
 	baseUrl string
@@ -65,6 +69,22 @@ func (gg *gowget) parseArgs(args []string) bool {
 
 	flag.StringVar(&gg.flagOutpath, "o", "", "save directory.")
 
+	inc := flag.String("I", "", "list of allowed directories.")
+	if *inc != "" {
+		gg.flagInclude = strings.Split(*inc, ",")
+		for i:=0; i<len(gg.flagInclude); i++ {
+			gg.flagInclude[i] = strings.Trim(gg.flagInclude[i], " ")
+		}
+	}
+
+	exc := flag.String("X", "", "list of excluded directories.")
+	if *exc != "" {
+		gg.flagExclude = strings.Split(*exc, ",")
+		for i:=0; i<len(gg.flagExclude); i++ {
+			gg.flagExclude[i] = strings.Trim(gg.flagExclude[i], " ")
+		}
+	}
+
 	flag.Usage = gg.usage
 
 	flag.Parse()
@@ -107,4 +127,31 @@ func (gg *gowget) parseArgs(args []string) bool {
 
 		return true
 	}
+}
+
+func (gg *gowget) testUrl(url string) bool {
+
+	if len(gg.flagInclude) > 0 {
+
+		for i:=0; i<len(gg.flagInclude); i++ {
+			if strings.Contains(url, gg.flagInclude[i]) {
+				return true
+			}
+		}
+
+		return false
+	}
+
+	if len(gg.flagExclude) > 0 {
+
+		for i:=0; i<len(gg.flagExclude); i++ {
+			if strings.Contains(url, gg.flagExclude[i]) {
+				return true
+			}
+		}
+
+		return false
+	}
+
+	return true
 }

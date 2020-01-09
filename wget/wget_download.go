@@ -3,6 +3,7 @@ package wget
 import (
 	"io/ioutil"
 	"net/http"
+	"net/url"
 	"os"
 	"strings"
 	"time"
@@ -118,6 +119,10 @@ func (dl *download) httpRequest(method, url string) (*http.Response, error) {
 
 func (dl *download) parseHead(url string, recursive bool)  {
 
+	if !dl.gg.testUrl(url) {
+		return
+	}
+
 	headResp, err := dl.httpRequest(http.MethodHead, url)
 	if err != nil {
 		return
@@ -168,8 +173,6 @@ func (dl *download) parseHead(url string, recursive bool)  {
 		}
 
 	}
-
-	dl.stats.SetParseStats()
 }
 
 func (dl *download) addDownloadFile(resp *http.Response, url, cType string)  {
@@ -187,16 +190,24 @@ func (dl *download) addDownloadFile(resp *http.Response, url, cType string)  {
 	} else {
 		dl.dlList = append(dl.dlList, dlFile)
 	}
+
+	dl.stats.SetParseStats()
 }
 
-func (dl *download) writeHtml(url, body string)  {
+func (dl *download) writeHtml(htmlUrl, body string)  {
 
-	dir, filePath := getWritePath(dl.gg.flagOutpath, url, true)
+	normalUrl, err := url.PathUnescape(htmlUrl)
+	if err != nil {
+		gLog.logErr("fail to unescape path.[url:%s, err:%s]", htmlUrl, err.Error())
+		return
+	}
+
+	dir, filePath := getWritePath(dl.gg.flagOutpath, normalUrl, true)
 	createDirectory(dir)
 
 	file, err := os.Create(filePath)
 	if err != nil {
-		gLog.logErr("failed to create html.[err:%s, url:%s]", err.Error(), url)
+		gLog.logErr("failed to create html.[err:%s, url:%s]", err.Error(), htmlUrl)
 		return
 	}
 	defer file.Close()

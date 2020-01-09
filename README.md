@@ -12,13 +12,19 @@ mini wget with golang, u can customize your aoi to grab what u want. aoi means a
     Usage: gowget [-VhrH] [-v -p -nv -np] [-o=path] url
     
     Options:
-      -H	go to foreign hosts when recursive.
-      -V	display the version of gowget.
-      -h	print this help.
-      -np	don't ascend to the parent directory.
-      -nv	turn off verboseness, without being quiet.
+      -H    go to foreign hosts when recursive.
+      -I string
+            list of allowed directories.
+      -V    display the version of gowget.
+      -X string
+            list of excluded directories.
+      -h    print this help.
+      -np
+            don't ascend to the parent directory.
+      -nv
+            turn off verboseness, without being quiet.
       -o string
-          	save directory.
-      -p	include parent when recursive. (default true)
-      -r	specify recursive download.
-      -v	be verbose(this is the default). (default true)
+            save directory.
+      -p    include parent when recursive. (default true)
+      -r    specify recursive download.
+      -v    be verbose(this is the default). (default true)

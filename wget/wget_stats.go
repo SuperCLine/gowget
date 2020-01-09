@@ -45,6 +45,7 @@ func (s *downloadStats) progress(size, totalSize int64) string {
 
 	equals := int(size * 50 / totalSize)
 	spaces := 50 - equals
+
 	prog := strings.Repeat("=", equals) + ">" + strings.Repeat(" ", spaces)
 
 	return prog

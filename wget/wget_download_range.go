@@ -2,6 +2,7 @@ package wget
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"net/http"
 	"net/http/cookiejar"
@@ -48,6 +49,10 @@ func (dr *downloadRange) HandleDownLoad(info *downloadFile, file *os.File, fileL
 		return err
 	}
 	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK || resp.StatusCode != http.StatusPartialContent {
+		return errors.New("Bad download range request.")
+	}
 
 	buf := pool.Get().(*bytes.Buffer)
 	buf.Reset()

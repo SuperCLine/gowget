@@ -118,11 +118,16 @@ func (di *downloadFile) HandleDownLoad() {
 			for i:=0; i<len(failRanges); i++ {
 
 				sliceSize := (failRanges[i].mEnd - failRanges[i].mStart) / gSubSliceNum
-				for j:=0; j<gSubSliceNum; j++ {
+				sliceNum := gSubSliceNum
+				if failRanges[i].mEnd - failRanges[i].mStart < gPackageSize - 1 {
+					sliceSize = failRanges[i].mEnd - failRanges[i].mStart
+					sliceNum =  1
+				}
+				for j:=0; j<sliceNum; j++ {
 
 					start := failRanges[i].mStart + int64(j) * sliceSize
 					end := start + sliceSize
-					if j == gSubSliceNum - 1 {
+					if j == sliceNum - 1 {
 						end = failRanges[i].mEnd
 					}
 
