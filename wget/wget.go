@@ -146,11 +146,11 @@ func (gg *gowget) testUrl(url string) bool {
 
 		for i:=0; i<len(gg.flagExclude); i++ {
 			if strings.Contains(url, gg.flagExclude[i]) {
-				return true
+				return false
 			}
 		}
 
-		return false
+		return true
 	}
 
 	return true
