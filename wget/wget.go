@@ -70,6 +70,12 @@ func (gg *gowget) parseArgs(args []string) bool {
 	flag.StringVar(&gg.flagOutpath, "o", "", "save directory.")
 
 	inc := flag.String("I", "", "list of allowed directories.")
+	exc := flag.String("X", "", "list of excluded directories.")
+
+	flag.Usage = gg.usage
+
+	flag.Parse()
+
 	if *inc != "" {
 		gg.flagInclude = strings.Split(*inc, ",")
 		for i:=0; i<len(gg.flagInclude); i++ {
@@ -77,17 +83,12 @@ func (gg *gowget) parseArgs(args []string) bool {
 		}
 	}
 
-	exc := flag.String("X", "", "list of excluded directories.")
 	if *exc != "" {
 		gg.flagExclude = strings.Split(*exc, ",")
 		for i:=0; i<len(gg.flagExclude); i++ {
 			gg.flagExclude[i] = strings.Trim(gg.flagExclude[i], " ")
 		}
 	}
-
-	flag.Usage = gg.usage
-
-	flag.Parse()
 
 	numArgs := len(args)
 	if gg.flagHelp || numArgs == 0 {
